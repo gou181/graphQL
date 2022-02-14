@@ -1,6 +1,6 @@
 /* eslint-disable semi */
 require('./mongoconnect');
-
+const mongoose = require('mongoose');
 const { buildSchema } = require('graphql');
 const { graphqlHTTP } = require('express-graphql');
 const jwt = require('jsonwebtoken');
@@ -9,6 +9,7 @@ const jwtSecret = 'husshh';
 const express = require('express');
 const User = require('./models/User');
 const Post = require('./models/Post');
+
 /*
 1 - Fork the repo
 2 - clone your repo after forking
@@ -45,19 +46,28 @@ const schema = buildSchema(`
     lastName: String!
     age: Int
   }
+  type comment{
+    userId:String,
+    content:String
+  }
   type Post{
     content: String!
     user: User!
+    comments: [comment]
   }
   type Query{
     hello: String
     getMyPosts(token: String): [Post!]!
     getAllPosts: [Post!]!
+    getPostComments(id:ID, token:String): [comment]
   }
   type Mutation{
     createUser(userData: UserRegistrationInput): User
     loginUser(username: String, password: String): LoginPayload
     postCreate(token:String, content:String): String
+    postUpdate(id:String, token:String, content:String): String
+    postDelete(id:String, token:String): String
+    postComment(id:String, token:String, content:String): String
   }
 `);
 
@@ -111,6 +121,31 @@ const postsMutation = {
     await post.save();
     return 'Success';
   },
+  postUpdate: async ({ id, content, token }) => {
+    const user = await auth(token);
+    if (!user) return 'Authentication error';
+    await Post.findOneAndUpdate(
+      { _id: id },
+      { content }
+    )
+    return 'Success';
+  },
+  postDelete: async ({ id, token }) => {
+    const user = await auth(token);
+    if (!user) return 'Authentication error';
+    await Post.findOneAndDelete({_id: id});
+    return 'Success';
+  },
+  postComment: async ({ id, token, content }) => {
+    const user = await auth(token);
+    if (!user) return 'Authentication error';
+    const post = await Post.find({_id:id})
+    const userId = user.id;
+    const comment = { userId, content };
+    console.log(post[0].comments.push(comment))
+    await post[0].save();
+    return 'Success';
+  },
 };
 
 
@@ -127,6 +162,13 @@ const postsQuery = {
     const posts = await Post.find({}).populate('userId')
     return posts.map(p => ({ ...p.toJSON(), user: p.userId }))
   },
+
+  getPostComments: async ({ id, token }) => {
+    const user = await auth(token);
+    if (!user) return 'Authentication error';
+    const post = await Post.find({_id:id});
+    return post[0].comments;
+  }
 };
 
 

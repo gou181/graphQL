@@ -1,0 +1,56 @@
+mutation {
+  //create new user
+  createUser(userData:{
+    username:"fouda99",
+    password:"123",
+    firstName:"ahmed",
+    lastName:"fouda",
+    age:13
+  }) {
+    firstName,
+    lastName,
+    age,
+  }
+
+  // log in with the new account
+  loginUser(username:"fouda99",password:"123"){
+    token
+  }
+
+  // add new post
+  postCreate(token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA5MmUxMDllYzBiYzA5OTg1NGRjZWYiLCJpYXQiOjE2NDQ3NjkxMjl9.GuQjcEaWm2N3aKnDFxamMLYRIE3s0pQv6WDjzxRpZtk",content:"myFirstPost")
+
+  // update post
+  postUpdate(id:"6209c8cbdc31979bf4abbf2f",token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA5MmUxMDllYzBiYzA5OTg1NGRjZWYiLCJpYXQiOjE2NDQ4MDgwMjF9.z6eM0bsz5piO8Z7OMnyNuYNHThyaPBU9HrOhLdKA3F4",content:"new test")
+
+  // delete post
+  postDelete(id:"6209c8cbdc31979bf4abbf2f",token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA5MmUxMDllYzBiYzA5OTg1NGRjZWYiLCJpYXQiOjE2NDQ4MDgwMjF9.z6eM0bsz5piO8Z7OMnyNuYNHThyaPBU9HrOhLdKA3F4")
+
+  // add comment to post
+  postComment(id:"6209c8cbdc31979bf4abbf2f",token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA5MmUxMDllYzBiYzA5OTg1NGRjZWYiLCJpYXQiOjE2NDQ4MDgwMjF9.z6eM0bsz5piO8Z7OMnyNuYNHThyaPBU9HrOhLdKA3F4",content:"comment")
+
+    
+}
+
+query{
+
+  // get comments of specific post
+  getPostComments(id:"6209c8cbdc31979bf4abbf2f",token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjA5MmUxMDllYzBiYzA5OTg1NGRjZWYiLCJpYXQiOjE2NDQ4MDgwMjF9.z6eM0bsz5piO8Z7OMnyNuYNHThyaPBU9HrOhLdKA3F4"){
+    userId,
+    content
+  }
+
+  // get all posts with comments
+  getAllPosts{
+    content,
+    comments{
+      userId,
+      content
+    },
+    user{
+      firstName,
+      lastName,
+      age
+    }
+  }
+}
